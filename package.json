@@ -1,0 +1,20 @@
+{
+  "name": "com.mitfart.node-engine",
+  "author": "Mitfart",
+  "displayName": "Node Engine",
+  "description": "Node Engine",
+  "unity": "2020.3",
+  "version": "2023.1.25",
+  "keywords": [
+    "unity",
+    "node",
+    "nodeengine",
+    "behavior",
+    "behaviortree"
+  ],
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mitfart/NodeEngine.git"
+  }
+}

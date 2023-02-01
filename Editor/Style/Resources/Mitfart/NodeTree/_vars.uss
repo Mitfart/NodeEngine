@@ -1,0 +1,29 @@
+:root {
+    --c-node-0: /* #191919 */ var(--unity-colors-app_toolbar_button-border            );
+    --c-node-1: /* #232323 */ var(--unity-colors-default-border                       );
+    --c-node-2: /* #282828 */ var(--unity-colors-default-background                   );
+    --c-node-3: /* #383838 */ var(--unity-colors-app_toolbar_button-background        );
+    --c-node-4: /* #424242 */ var(--unity-colors-app_toolbar_button-background-hover  );
+    --c-node-5: /* #6A6A6A */ var(--unity-colors-app_toolbar_button-background-checked);
+    --c-node-6: /* #BDBDBD */ var(--unity-colors-default-text-hover                   );
+    --c-node-7: /* #D2D2D2 */ var(--unity-colors-default-text                         );
+    
+    --c-grid-background: var(--c-node-1);
+    --c-grid-line:       var(--c-node-2);
+    --c-grid-line-thick: var(--c-node-3);
+    
+    
+    --c-heightlight: var(--unity-colors-highlight-text); /* rgb(69,193,256);  */
+
+    --c-fail: var(--unity-colors-error-text);
+    --c-warn: var(--unity-colors-warning-text);
+    --c-success: var(--c-heightlight);
+
+    
+    --metrics-1:  4px;
+    --metrics-2:  8px;
+    --metrics-3: 12px;
+    --metrics-4: 16px;
+    --metrics-5: 20px;
+    --metrics-6: 32px;
+}

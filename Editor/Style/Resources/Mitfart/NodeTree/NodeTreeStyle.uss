@@ -1,0 +1,60 @@
+#rootVisualContainer {
+    min-width: var(--metrics-6);
+    min-height: var(--metrics-6);
+}
+
+
+
+GridBackground {
+    --grid-background-color: var(--c-grid-background);
+    --line-color: var(--c-grid-line);
+    --thick-line-color: var(--c-grid-line-thick);
+    --spacing: var(--metrics-6);
+}
+
+
+
+EdgeView.edge.inProcess {
+    --selected-edge-color: var(--c-process);
+    --ghost-edge-color: var(--c-process);
+    --edge-color: var(--c-process);
+}
+
+EdgeView.edge.success {
+    --selected-edge-color: var(--c-success);
+    --ghost-edge-color: var(--c-success);
+    --edge-color: var(--c-success);
+}
+
+EdgeView.edge.fail {
+    --selected-edge-color: var(--c-fail);
+    --ghost-edge-color: var(--c-fail);
+    --edge-color: var(--c-fail);
+}
+
+
+
+NodeView {
+    min-width: 150px;
+    max-width: 300px;
+}
+
+NodeView #extension {
+    background-color: var(--c-node-3);
+    padding: var(--metrics-2);
+}
+
+NodeView #selection-border { border-color: var(--c-heightlight); }
+NodeView:hover #selection-border { border-color: var(--c-heightlight); }
+NodeView:selected #selection-border { border-color: var(--c-heightlight); }
+NodeView:selected:hover #selection-border { border-color: var(--c-heightlight); }
+
+
+
+NodeView .unity-base-field .unity-text-element,
+NodeView .unity-base-field #unity-text-input {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: var(--metrics-6);
+    width: 50%;
+}

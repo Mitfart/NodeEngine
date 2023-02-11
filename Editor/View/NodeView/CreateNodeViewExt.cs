@@ -20,13 +20,13 @@ namespace NodeEngine.Editor.View {
     private static void AddInputPort(this NodeView nodeView, PropertyInfo property) {
       var input = property.GetCustomAttribute<NodeInput>();
       if (input != null)
-        nodeView.AddInputPort(property.PropertyType, input.Name, input.Capacity);
+        nodeView.AddInputPort(property.PropertyType, input.Name ?? property.Name, property, input.Capacity);
     }
     
     private static void AddOutputPort(this NodeView nodeView, PropertyInfo property) {
       var output = property.GetCustomAttribute<NodeOutput>();
       if (output != null)
-        nodeView.AddOutputPort(property.PropertyType, output.Name, output.Capacity);
+        nodeView.AddOutputPort(property.PropertyType, output.Name ?? property.Name, property, output.Capacity);
     }
     
     

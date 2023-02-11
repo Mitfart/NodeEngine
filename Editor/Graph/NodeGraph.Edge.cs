@@ -1,15 +1,21 @@
-﻿using NodeEngine.Editor.View;
+﻿using System.Linq;
+using NodeEngine.Editor.View;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Edge = NodeEngine.Runtime.Edge;
 
 namespace NodeEngine.Editor.Graph {
   public partial class NodeGraph {
-    public EdgeView AddEdge(NodeView outNodeView, NodeView inNodeView, Runtime.Edge asset) {
+    public EdgeView AddEdge(NodeView outNodeView, NodeView inNodeView, Edge asset) {
       var edge = new EdgeView(
         outputNodeView: outNodeView,
         inputNodeView: inNodeView,
         asset
       );
+
+      
+      edge.output = outNodeView.OutputPorts.First(pair => pair.Value.Name.Equals(edge.Connection.source.Name)).Key;
+      edge.input  = inNodeView.InputPorts.First(pair => pair.Value.Name.Equals(edge.Connection.target.Name)).Key;
       
       edge.output.Connect(edge);
       edge.input.Connect(edge);
@@ -19,13 +25,15 @@ namespace NodeEngine.Editor.Graph {
     }
 
     public EdgeView AddEdge(NodeView outNodeView, NodeView inNodeView, Port outPort, Port inPort) {
-      var edge = ScriptableObject.CreateInstance<Runtime.Edge>();
+      var edge = ScriptableObject.CreateInstance<Edge>();
       edge.Init(
         EditorWindow.ActiveNodeTree,
         outNodeView.Asset,
         inNodeView.Asset,
-        outNodeView.OutputPorts.IndexOf(outPort),
-        inNodeView.InputPorts.IndexOf(inPort));
+        new Edge.ConnectionMap {
+          source = outNodeView.OutputPorts[outPort],
+          target = inNodeView.InputPorts[inPort]
+        });
       
       return AddEdge(outNodeView, inNodeView, edge);
     }

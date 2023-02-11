@@ -13,7 +13,6 @@ namespace NodeEngine.Runtime {
     public virtual string Title => GetType().Name;
     
     
-    
     public void Init(NodeTree tree) {
       if (IsInitialized) return;
       IsInitialized = true;

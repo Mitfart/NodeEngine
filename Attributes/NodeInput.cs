@@ -7,7 +7,7 @@ namespace NodeEngine.Attributes {
     public string        Name     { get; }
     public Port.Capacity Capacity { get; }
 
-    public NodeInput(string name = "", Port.Capacity capacity = Port.Capacity.Single) {
+    public NodeInput(string name = null, Port.Capacity capacity = Port.Capacity.Single) {
       Name     = name;
       Capacity = capacity;
     }

@@ -6,40 +6,24 @@ using Edge = UnityEditor.Experimental.GraphView.Edge;
 
 namespace NodeEngine.Editor.View {
   public class EdgeView : Edge, IDestroyable {
-    public NodeTree     NodeTree { get; }
-    public Runtime.Edge Asset    { get; }
+    public Runtime.Edge               Asset      { get; }
+    public NodeTree                   NodeTree   => Asset.Tree;
+    public Runtime.Edge.ConnectionMap Connection => Asset.Connection;
     
     private NodeView OutputNodeView { get; }
     private NodeView InputNodeView  { get; }
-    private int      OutputPortID   { get; }
-    private int      InputPortID    { get; }
+    
 
-    
-    
+
+
     public EdgeView(NodeView outputNodeView, NodeView inputNodeView, Runtime.Edge asset) {
       Asset = asset;
       
       OutputNodeView = outputNodeView;
       InputNodeView  = inputNodeView;
-      NodeTree       = Asset.Tree;
-
-      output = outputNodeView.OutputPorts[Asset.OutPortID];
-      input  = inputNodeView.InputPorts[Asset.InPortID];
-
-      OutputPortID = OutputNodeView.OutputPorts.IndexOf(output);
-      InputPortID  = InputNodeView.InputPorts.IndexOf(input);
     }
     
-    
-    
     public Runtime.Edge SaveAsset() {
-      Asset.Init(
-        NodeTree,
-        OutputNodeView.Asset,
-        InputNodeView.Asset,
-        OutputPortID,
-        InputPortID);
-
       return Asset.Save(GetAssetName(), NodeTree.GetEdgesFolder());
     }
     
@@ -61,7 +45,7 @@ namespace NodeEngine.Editor.View {
     
     
     public string GetAssetName() {
-      return $"Edge_{OutputNodeView.GetAssetName()}_({OutputPortID})_to_{InputNodeView.GetAssetName()}_({InputPortID})";
+      return $"Edge_{OutputNodeView.GetAssetName()}_({Connection.source.Name})_to_{InputNodeView.GetAssetName()}_({Connection.target.Name})";
     }
   }
 }

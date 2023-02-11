@@ -27,6 +27,8 @@ namespace NodeEngine.Editor.Graph {
 
       RemoveElement(edge);
       var edgeView = AddEdge(outNode, inNode, outPort, inPort);
+      edgeView.output = outPort;
+      edgeView.input  = inPort;
       
       outNode.InvokeConnectPort(outPort, inPort);
       inNode.InvokeConnectPort(inPort, outPort);

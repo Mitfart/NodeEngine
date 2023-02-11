@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using NodeEngine.Attributes;
 using NodeEngine.Editor.Window;
@@ -13,7 +14,7 @@ namespace NodeEngine.Editor.Search {
     private const string TITLE               = "Nodes";
     private const string HIERARCHY_SEPARATOR = "/";
 
-    private static readonly StringBuilder        Groups_Builder = new();
+    private static readonly StringBuilder        GroupsBuilder = new();
     private static          Texture2D            _indentationIcon;
     private                 NodeTreeEditorWindow _nodeTreeEditor;
 
@@ -21,65 +22,91 @@ namespace NodeEngine.Editor.Search {
     
     public void Init(NodeTreeEditorWindow nodeTreeEditor) {
       _nodeTreeEditor  = nodeTreeEditor;
-      _indentationIcon = GetIndentationIcon();
+      _indentationIcon = SearchWindowUtils.GetIndentationIcon();
     }
     
     
     
-    public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) {
-      var items     = new List<SearchTreeEntry>();
-      var groups    = new HashSet<string>();
-      var nodeTypes = TypeCache.GetTypesDerivedFrom<Node>();
-      int indentLevel;
+      public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context) {
+         var items     = new List<SearchTreeEntry>();
+         var groups    = new HashSet<string>();
+         var nodeTypes = TypeCache.GetTypesDerivedFrom<Node>();
       
-      AddTitle();
+         AddTitle(items);
 
-      foreach (var nodeType in nodeTypes) {
-        
-        if (nodeType.IsAbstract) continue;
-        if (nodeType.GetCustomAttributes(typeof(NonSearchableNode), false).Length > 0) continue;
+         foreach (var nodeType in nodeTypes) {
+            if (nodeType.IsAbstract) continue;
+            if (nodeType.GetCustomAttribute(typeof(NonSearchableNode), false) != null) continue;
 
-          indentLevel = 1;
-        Groups_Builder.Clear();
+            GroupsBuilder.Clear();
 
-        AddGroups(nodeType.BaseType);
-        AddItem(nodeType);
+            AddGroupsByInheritance(items, groups, nodeType, out var indentLevel);
+            AddItem(items, nodeType.Name, indentLevel, nodeType);
+         }
+
+         return items;
       }
 
-      return items;
-
-
-      void AddTitle() {
-        items.Add(new SearchTreeGroupEntry(new GUIContent(TITLE)));
+      
+      private static void AddTitle(ICollection<SearchTreeEntry> items) {
+         items.Add(new SearchTreeGroupEntry(new GUIContent(TITLE)));
       }
-
-      void AddGroups(Type baseType) {
-        while (baseType != null && baseType != typeof(Node)) {
-          Groups_Builder.Append(baseType);
-
-          var curGroup = Groups_Builder.ToString();
-
-          if (!groups.Contains(curGroup)) { AddGroup(baseType, curGroup); }
-
-          Groups_Builder.Append(HIERARCHY_SEPARATOR);
-
-          baseType = baseType.BaseType;
-          indentLevel++;
-        }
+      
+      private static void AddGroupsByInheritance(
+         ICollection<SearchTreeEntry> items, 
+         ICollection<string>          groups, 
+         Type                         type, 
+         out int                      indentLevel) 
+      {
+         indentLevel = 0;
+         while (type != null && type != typeof(Node)) {
+            AddGroup(
+               items, 
+               groups, 
+               type.Name, 
+               indentLevel++);
+            
+            type = type.BaseType;
+         }
       }
-
-      void AddGroup(Type baseType, string curGroup) {
-        items.Add(new SearchTreeGroupEntry(new GUIContent(baseType.Name), indentLevel));
-        groups.Add(curGroup);
+      
+      private static void AddGroup(
+         ICollection<SearchTreeEntry> items, 
+         ICollection<string>          groups, 
+         string                       groupName,
+         int                          indentLevel) 
+      {
+         var groupFullName = 
+            GroupsBuilder
+              .Append(groupName)
+              .Append(HIERARCHY_SEPARATOR)
+              .ToString();
+         
+         if (groups.Contains(groupFullName)) return;
+            
+         items.Add(
+            new SearchTreeGroupEntry(
+               new GUIContent(groupName), 
+               indentLevel
+               )
+            );
+         groups.Add(groupFullName);
       }
-
-      void AddItem(Type nodeType) {
-        items.Add(
-          new SearchTreeEntry(new GUIContent(nodeType.Name, _indentationIcon)) {
-            level = indentLevel, userData = nodeType
-          });
+      
+      private static void AddItem(
+         ICollection<SearchTreeEntry> items,
+         string                       name,
+         int                          indentLevel,
+         object                       data
+      ) {
+         items.Add(
+            new SearchTreeEntry(new GUIContent(name, _indentationIcon)){
+               level    = indentLevel, 
+               userData = data
+            });
       }
-    }
+    
+    
     
     public bool OnSelectEntry(SearchTreeEntry searchTreeEntry, SearchWindowContext context) {
       var nodeType = (Type) searchTreeEntry.userData;
@@ -87,17 +114,7 @@ namespace NodeEngine.Editor.Search {
       var node     = _nodeTreeEditor.Graph.AddNode(position, nodeType);
 
       _nodeTreeEditor.SaveNode(node);
-      
       return true;
-    }
-
-    
-
-    private static Texture2D GetIndentationIcon() {
-      var icon = new Texture2D(1, 1);
-      icon.SetPixel(0, 0, Color.clear);
-      icon.Apply();
-      return icon;
     }
   }
 }

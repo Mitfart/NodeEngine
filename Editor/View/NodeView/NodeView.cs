@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NodeEngine.Editor.Utils;
 using NodeEngine.Runtime;
 using UnityEditor;
@@ -12,8 +13,8 @@ namespace NodeEngine.Editor.View {
     public NodeTree     NodeTree { get; }
     public Runtime.Node Asset    { get; }
 
-    public List<Port> InputPorts  { get; }
-    public List<Port> OutputPorts { get; }
+    public Dictionary<Port, PropertyInfo> OutputPorts { get; }
+    public Dictionary<Port, PropertyInfo> InputPorts  { get; }
 
     public event Action<Port, Port> OnConnectPort;
     public event Action<Port, Port> OnDisconnectPort;
@@ -27,10 +28,9 @@ namespace NodeEngine.Editor.View {
       Asset    = asset;
       title    = asset.Title;
       
-      InputPorts  = new List<Port>();
-      OutputPorts = new List<Port>();
-      
-      
+      OutputPorts = new Dictionary<Port, PropertyInfo>();
+      InputPorts  = new Dictionary<Port, PropertyInfo>();
+
       this.AddNodePorts();
       this.AddNodeFieldsAndProperties();
     }
@@ -66,27 +66,27 @@ namespace NodeEngine.Editor.View {
     
     
     
-    public Port AddInputPort(Type type, string portName, Port.Capacity capacity = Port.Capacity.Single) {
+    public Port AddInputPort(Type type, string portName, PropertyInfo propertyInfo, Port.Capacity capacity = Port.Capacity.Single) {
       var port = CreatePort(type, Direction.Input, portName, capacity);
-      InputPorts.Add(port);
+      InputPorts.Add(port, propertyInfo);
       inputContainer.Add(port);
       return port;
     }
     
-    public Port AddInputPort<T>(string portName, Port.Capacity capacity = Port.Capacity.Single) {
-      return AddInputPort(typeof(T), portName, capacity);
+    public Port AddInputPort<T>(string portName, PropertyInfo propertyInfo, Port.Capacity capacity = Port.Capacity.Single) {
+      return AddInputPort(typeof(T), portName, propertyInfo, capacity);
     }
     
     
-    public Port AddOutputPort(Type type, string portName, Port.Capacity capacity = Port.Capacity.Single) {
+    public Port AddOutputPort(Type type, string portName, PropertyInfo propertyInfo, Port.Capacity capacity = Port.Capacity.Single) {
       var port = CreatePort(type, Direction.Output, portName, capacity);
-      OutputPorts.Add(port);
+      OutputPorts.Add(port, propertyInfo);
       outputContainer.Add(port);
       return port;
     }
     
-    public Port AddOutputPort<T>(string portName, Port.Capacity capacity = Port.Capacity.Single) {
-      return AddOutputPort(typeof(T), portName, capacity);
+    public Port AddOutputPort<T>(string portName, PropertyInfo propertyInfo, Port.Capacity capacity = Port.Capacity.Single) {
+      return AddOutputPort(typeof(T), portName, propertyInfo, capacity);
     }
     
     
